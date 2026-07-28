@@ -11,6 +11,9 @@ class Car {
   bool alive;
   double distanceTraveled;
   int id;
+  int checkpointIndex;
+  double checkpointProgress;
+  int totalLaps;
 
   Car({
     required this.id,
@@ -22,6 +25,9 @@ class Car {
     this.height = 12,
     this.alive = true,
     this.distanceTraveled = 0,
+    this.checkpointIndex = 0,
+    this.checkpointProgress = 0,
+    this.totalLaps = 0,
   });
 
   static const double maxSpeed = 200;
@@ -46,6 +52,25 @@ class Car {
     }
   }
 
+  void updateCheckpoint(List<Offset> checkpoints) {
+    if (checkpoints.isEmpty) return;
+
+    final nextIdx = (checkpointIndex + 1) % checkpoints.length;
+    final next = checkpoints[nextIdx];
+    final dist = sqrt(pow(next.dx - x, 2) + pow(next.dy - y, 2));
+
+    if (dist < 30) {
+      final prevIdx = checkpointIndex;
+      checkpointIndex = nextIdx;
+      if (checkpointIndex == 0 && prevIdx == checkpoints.length - 1) {
+        totalLaps++;
+      }
+    }
+
+    final curr = checkpoints[checkpointIndex];
+    checkpointProgress = 1 - (sqrt(pow(curr.dx - x, 2) + pow(curr.dy - y, 2)) / 300).clamp(0, 1);
+  }
+
   void kill() {
     alive = false;
     speed = 0;
@@ -58,6 +83,13 @@ class Car {
     speed = 0;
     alive = true;
     distanceTraveled = 0;
+    checkpointIndex = 0;
+    checkpointProgress = 0;
+    totalLaps = 0;
+  }
+
+  double computeFitness() {
+    return totalLaps * 1000 + checkpointIndex * 10 + checkpointProgress;
   }
 
   List<double> getSensorDistances(List<List<Offset>> trackSegments) {
