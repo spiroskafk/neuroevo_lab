@@ -12,16 +12,18 @@ class CarSimulation extends SimulationBase {
   Population? _population;
   bool _needsSpawn = false;
 
+  static NEATConfig get defaultConfig => NEATConfig(
+    numInputs: 7,
+    numOutputs: 2,
+    populationSize: 100,
+    maxStagnation: 25,
+    compatibilityThreshold: 1.5,
+  );
+
   CarSimulation()
       : super(
           config: const SimulationConfig(),
-          neatConfig: NEATConfig(
-            numInputs: 7,
-            numOutputs: 2,
-            populationSize: 100,
-            maxStagnation: 25,
-            compatibilityThreshold: 1.5,
-          ),
+          neatConfig: defaultConfig,
         );
 
   @override

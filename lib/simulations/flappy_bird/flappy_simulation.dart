@@ -16,19 +16,21 @@ class FlappyBirdSimulation extends SimulationBase {
   double _screenHeight = 800;
   int _maxFitness = 0;
 
+  static NEATConfig get defaultConfig => NEATConfig(
+    numInputs: 4,
+    numOutputs: 1,
+    populationSize: 100,
+    maxStagnation: 25,
+    compatibilityThreshold: 1.0,
+    mutateAddNodeRate: 0.1,
+    mutateAddConnectionRate: 0.15,
+    mutateWeightsPower: 0.8,
+  );
+
   FlappyBirdSimulation()
       : super(
           config: const SimulationConfig(),
-          neatConfig: NEATConfig(
-            numInputs: 4,
-            numOutputs: 1,
-            populationSize: 100,
-            maxStagnation: 25,
-            compatibilityThreshold: 1.0,
-            mutateAddNodeRate: 0.1,
-            mutateAddConnectionRate: 0.15,
-            mutateWeightsPower: 0.8,
-          ),
+          neatConfig: defaultConfig,
         );
 
   @override
