@@ -37,7 +37,10 @@ class CarSimulation extends SimulationBase {
 
   void _spawnCars() {
     final track = _track;
-    if (track == null) return;
+    if (track == null) {
+      _needsSpawn = true;
+      return;
+    }
     cars.clear();
     final pop = _population!;
     for (int i = 0; i < pop.genomes.length; i++) {
@@ -69,10 +72,10 @@ class CarSimulation extends SimulationBase {
 
   @override
   void update(double dt) {
-    final track = _track;
-    if (track == null) return;
+    if (_track == null) return;
     if (!state.isRunning) return;
     if (_population == null) return;
+    final track = _track!;
 
     if (_needsSpawn) {
       _spawnCars();
