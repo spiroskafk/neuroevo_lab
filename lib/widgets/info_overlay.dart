@@ -17,17 +17,19 @@ class InfoOverlay extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _infoChip('Gen', '${state.generation}'),
-          const SizedBox(width: 12),
-          _infoChip('Alive', '${state.aliveCount}'),
-          const SizedBox(width: 12),
-          _infoChip('Best', state.bestFitness.toStringAsFixed(0)),
+          _chip('Gen', '${state.generation}'),
+          const SizedBox(width: 10),
+          _chip('Alive', '${state.aliveCount}'),
+          const SizedBox(width: 10),
+          _chip('Laps', '${state.bestLaps}'),
+          const SizedBox(width: 10),
+          _chip('Species', '${state.speciesCount}'),
         ],
       ),
     );
   }
 
-  Widget _infoChip(String label, String value) {
+  Widget _chip(String label, String value) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

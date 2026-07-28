@@ -28,6 +28,7 @@ class CarSimulation extends SimulationBase {
     _track = null;
     cars.clear();
     _population = Population.initial(neatConfig, seed: 42);
+    state.speciesCount = _population!.species.length;
     _needsSpawn = true;
   }
 
@@ -64,8 +65,11 @@ class CarSimulation extends SimulationBase {
 
     pop.evolve();
     state.generation = pop.generation;
-    state.bestFitness = pop.bestFitness;
+    if (pop.bestFitness > state.bestFitness) {
+      state.bestFitness = pop.bestFitness;
+    }
     state.averageFitness = pop.averageFitness;
+    state.speciesCount = pop.species.length;
     state.recordGeneration();
     _spawnCars();
   }
@@ -112,12 +116,21 @@ class CarSimulation extends SimulationBase {
     }
 
     double maxFitness = 0;
+    int maxLaps = 0;
+    int maxCheckpoint = 0;
     for (int i = 0; i < cars.length && i < pop.genomes.length; i++) {
-      final f = cars[i].computeFitness();
-      if (f > maxFitness) maxFitness = f;
+      final c = cars[i];
+      final f = c.computeFitness();
+      if (f > maxFitness) {
+        maxFitness = f;
+        maxLaps = c.totalLaps;
+        maxCheckpoint = c.checkpointIndex;
+      }
     }
     if (maxFitness > state.bestFitness) {
       state.bestFitness = maxFitness;
+      state.bestLaps = maxLaps;
+      state.bestCheckpoint = maxCheckpoint;
     }
   }
 

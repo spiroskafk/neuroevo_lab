@@ -37,7 +37,7 @@ class Car {
   static const double brakeForce = 100;
   static const double friction = 0.95;
   static const double turnSpeed = 3;
-  static const double maxStagnationTime = 5;
+  static const double maxStagnationTime = 8;
 
   void update(double dt, double acceleration, double steering) {
     if (!alive) return;

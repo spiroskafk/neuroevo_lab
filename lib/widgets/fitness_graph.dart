@@ -9,7 +9,7 @@ class FitnessGraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,
+      height: 100,
       padding: const EdgeInsets.all(8),
       child: CustomPaint(
         size: Size.infinite,
@@ -26,8 +26,21 @@ class _FitnessGraphPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    _drawBackground(canvas, size);
+
     if (state.bestFitnessHistory.isEmpty) return;
 
+    final maxVal = state.bestFitnessHistory
+        .fold(0.0, (prev, v) => v > prev ? v : prev);
+    if (maxVal <= 0) return;
+
+    _drawTargetLine(canvas, size, maxVal);
+    _drawYLabels(canvas, size, maxVal);
+    _drawLine(canvas, size, state.bestFitnessHistory, maxVal, const Color(0xFF4CAF50));
+    _drawLine(canvas, size, state.averageFitnessHistory, maxVal, const Color(0xFF2196F3));
+  }
+
+  void _drawBackground(Canvas canvas, Size size) {
     final bgPaint = Paint()..color = const Color(0xFF16213E);
     canvas.drawRRect(
       RRect.fromRectAndRadius(
@@ -36,16 +49,43 @@ class _FitnessGraphPainter extends CustomPainter {
       ),
       bgPaint,
     );
+  }
 
-    final maxFitness = state.bestFitnessHistory
-        .fold(0.0, (prev, v) => v > prev ? v : prev);
-    if (maxFitness <= 0) return;
+  void _drawTargetLine(Canvas canvas, Size size, double maxVal) {
+    const target = 1000.0;
+    if (maxVal < target) {
+      final y = size.height - (target / maxVal * size.height);
+      if (y > 0) {
+        final paint = Paint()
+          ..color = const Color(0x44FFD700)
+          ..strokeWidth = 1
+          ..style = PaintingStyle.stroke;
+        canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
 
-    final bestValues = state.bestFitnessHistory;
-    final avgValues = state.averageFitnessHistory;
+        final tp = TextPainter(
+          text: TextSpan(
+            text: '1 lap',
+            style: TextStyle(color: Colors.amber.withValues(alpha: 0.5), fontSize: 9),
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        tp.paint(canvas, Offset(2, y - tp.height - 2));
+      }
+    }
+  }
 
-    _drawLine(canvas, size, bestValues, maxFitness, const Color(0xFF4CAF50));
-    _drawLine(canvas, size, avgValues, maxFitness, const Color(0xFF2196F3));
+  void _drawYLabels(Canvas canvas, Size size, double maxVal) {
+    final genCount = state.bestFitnessHistory.length;
+    if (genCount < 2) return;
+
+    final tp = TextPainter(
+      text: TextSpan(
+        text: 'G${state.generation}',
+        style: const TextStyle(color: Colors.grey, fontSize: 9),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    tp.paint(canvas, Offset(size.width - tp.width - 4, size.height - tp.height - 2));
   }
 
   void _drawLine(
