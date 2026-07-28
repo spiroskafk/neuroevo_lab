@@ -20,6 +20,7 @@ class CarSimulation extends SimulationBase {
             numOutputs: 2,
             populationSize: 100,
             maxStagnation: 25,
+            compatibilityThreshold: 0.5,
           ),
         );
 
