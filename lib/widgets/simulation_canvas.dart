@@ -8,19 +8,17 @@ class SimulationCanvas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: const Color(0xFF0F0F23),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: CustomPaint(
-            painter: _SimulationPainter(simulation),
-            size: Size.infinite,
-          ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0F0F23),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: CustomPaint(
+          painter: _SimulationPainter(simulation),
+          size: Size.infinite,
         ),
       ),
     );
