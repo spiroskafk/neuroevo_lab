@@ -1,157 +1,101 @@
-# 🧬 NeuroEvo Lab
+# NeuroEvo Lab
 
-Μια **συλλογή από interactive simulations** για κινητά (Android/iOS) που δείχνουν αλγόριθμους μάθησης σε δράση — NEAT, Genetic Algorithms, Q-Learning, και Multi-agent systems.
+**Interactive mobile simulations** (Android/iOS) demonstrating AI learning algorithms — NEAT, Genetic Algorithms, Q-Learning, and Multi-agent systems.
 
-Built with **Flutter**. Zero external AI/ML dependencies — όλοι οι αλγόριθμοι γραμμένοι από το μηδέν.
+Built with **Flutter**. Zero external AI/ML dependencies — all algorithms hand-written in Dart.
 
 ---
 
-## Screens
-
-### 1. Home Screen — Library
-
-Grid with simulation cards. Tap to launch.
+## Simulations
 
 | Icon | Simulation | Algorithm | Status |
 |------|-----------|-----------|--------|
-| 🚗 | Self-driving Cars | NEAT | ✅ Phase 1 |
-| 🐦 | Flappy Bird AI | NEAT | ✅ Phase 1 |
-| 🚀 | Smart Rockets | Pure GA | ✅ Phase 1 |
-| 🧩 | Maze Solver | NEAT / Q-Learning | 🔜 Phase 2 |
-| ⚖️ | CartPole | NEAT | 🔜 Phase 2 |
-| ⚽ | Soccer | Multi-agent NEAT | 🔜 Phase 2 |
-| ⛰️ | Mountain Car | Q-Learning | 🔜 Phase 3 |
-| 🦁🐰 | Predator vs Prey | Multi-agent | 🔜 Phase 3 |
+| Car | Self-driving Cars | NEAT | Released |
+| Bird | Flappy Bird AI | NEAT | Building |
+| Rocket | Smart Rockets | Pure GA | Planned |
+| Maze | Maze Solver | NEAT / Q-Learning | Planned |
+| Weight | CartPole | NEAT | Planned |
+| Soccer | Soccer | Multi-agent NEAT | Planned |
+| Mountain | Mountain Car | Q-Learning | Planned |
+| Predator/Prey | Predator vs Prey | Multi-agent | Planned |
 
-### 2. Simulation Screen — Runner
+## Simulation Screen
 
-Shared screen for all simulations:
-
-```
-┌────────────────────────────────┐
-│ ← Cars    Gen:47  Best:891    │
-│  ┌──────────────────────────┐  │
-│  │   ╔══════════╗           │  │
-│  │   ║  🚗🏆🚗   ║           │  │
-│  │   ║    🚗     ║           │  │
-│  │   ╚══════════╝           │  │
-│  └──────────────────────────┘  │
-│  ▶ ⏩2x ⏩5x ⟲ ⚙️              │
-│  ┌── Fitness ──────────────┐  │
-│  │  ▁▃▆██▇▆▅▄▃▂▁ 891      │  │
-│  │  ▁▁▂▃▄▄▄▃▂▁  512       │  │
-│  └──────────────────────────┘  │
-│  [📊 Network]                  │
-└────────────────────────────────┘
-```
+Shared runner for all simulations:
 
 - **Canvas** renders simulation in real-time (CustomPainter)
-- **Controls**: Play/Pause, Speed (1x/2x/5x), Reset, Settings
-- **Info**: Generation counter, alive count, best fitness
-- **Fitness Graph**: best + avg fitness over generations
-- **Network Visualizer**: live NEAT neural network structure
-
-### 3. Settings Panel
-
-Per-simulation adjustable parameters:
-- Population size
-- Mutation rate
-- Crossover rate
-- Max generations
-- Simulation-specific params (track difficulty, obstacle count, etc.)
-
----
+- **Controls**: Play/Pause, Speed (1x/2x/5x), Analysis, NN viz toggle, Reset
+- **Info**: Generation, alive count, best laps, species count
+- **Fitness Graph**: best + avg fitness with 1-lap target line
+- **Analysis Sheet**: species history, complexity chart, per-species table
+- **NN Overlay**: live best-genome topology (connection weights, neuron activations)
 
 ## Architecture
 
 ```
 lib/
-  main.dart                     # Entry point
-  app.dart                      # MaterialApp with theme, routes
+  main.dart
+  app.dart
 
-  core/                         # Algorithm engines
-    neat/                       # NEAT (NeuroEvolution of Augmenting Topologies)
-      genome.dart               # Connection genes + node genes
-      neuron.dart               # Input/hidden/output types
-      connection.dart           # Synapse with innovation number
-      species.dart              # Compatibility distance, speciation
-      population.dart           # Evolution loop (select, crossover, mutate)
-      activator.dart            # Activation functions (sigmoid, tanh, relu)
-
-    ga/                         # Pure Genetic Algorithm
-      individual.dart           # GA individual (fixed genome)
-      ga_population.dart        # GA evolution loop
-
-    qlearning/                  # Q-Learning (future)
-      q_table.dart
-      q_agent.dart
+  core/neat/                   # NEAT engine
+    genome.dart                # Neuron + connection genes
+    neuron.dart                # Bias/input/hidden/output types
+    connection.dart            # Synapse with innovation number
+    species.dart               # Compatibility distance, stagnation
+    population.dart            # Evolution loop (select, crossover, mutate)
+    activator.dart             # tanh activation
 
   simulations/
     base/
-      simulation.dart           # Abstract base: init(), update(), render(), evolve()
-      simulation_config.dart    # Config model
-      evolution_state.dart      # Generation, fitness, alive count
+      simulation.dart          # Abstract base class
+      simulation_config.dart
+      evolution_state.dart     # Generation, fitness, species tracking
 
-    self_driving/               # NEAT cars
-      car.dart                  # Position, angle, speed, sensors
-      track.dart                # Waypoint-based closed loop
-      sensor.dart               # Ray casting distance detection
-      car_simulation.dart       # Simulation implementation
-      car_painter.dart          # CustomPainter rendering
+    self_driving/              # NEAT cars
+      car.dart                 # Physics, ray sensors, checkpoint tracking
+      track.dart               # Waypoint-based closed loop
+      car_simulation.dart      # NEAT wiring, fitness calc
+      car_painter.dart         # Canvas rendering
 
-    flappy_bird/                # NEAT birds (Phase 2)
-    smart_rockets/              # GA rockets (Phase 2)
+    flappy_bird/               # NEAT birds (in progress)
 
   screens/
-    home_screen.dart            # Library grid
-    simulation_screen.dart      # Shared runner
+    home_screen.dart           # Simulation library grid
+    simulation_screen.dart     # Shared runner with controls
 
   widgets/
-    simulation_canvas.dart      # CustomPaint wrapper
-    controls_bar.dart           # ▶ ⏩ ⟲
-    info_overlay.dart           # Generation, alive, fitness
-    fitness_graph.dart          # CustomPainter chart
-    neat_visualizer.dart        # NN structure visualization
-    simulation_card.dart        # Home screen card
-    parameter_panel.dart        # ⚙️ settings
+    simulation_canvas.dart
+    controls_bar.dart
+    info_overlay.dart
+    fitness_graph.dart
+    simulation_card.dart
+    analysis_sheet.dart        # Species/complexity analysis
+    neural_network_painter.dart # Live NN topology overlay
 
   models/
-    simulation_meta.dart        # id, title, icon, description, status
-
-  utils/
-    math_utils.dart             # Vector math, interpolation
+    simulation_meta.dart
 ```
 
----
+## NEAT Engine
 
-## NEAT Engine — Details
+Custom implementation from scratch:
 
-Built from scratch:
-
-- **Input nodes**: simulation-specific (sensor distances, speed, angle, bias)
-- **Output nodes**: simulation-specific (acceleration, steering / flap / steer)
-- **Hidden nodes**: evolve dynamically via add_node mutation
-- **Innovation numbers**: global counter, one per new connection/node
-- **Speciation**: topological + weight similarity via compatibility distance
-- **Selection**: tournament selection within species (elitism per species)
-- **Crossover**: aligned by innovation numbers; disjoint/excess genes from fitter parent
-- **Mutation**: weight perturbation (±gaussian), add node (split connection), add connection (new link), toggle enable/disable
-
----
+- **Innovation numbers**: global registry, one per new structure
+- **Speciation**: compatibility distance with N=1 for <20 connections
+- **Selection**: tournament within species + global elitism
+- **Crossover**: aligned by innovation numbers
+- **Mutation**: weight perturbation, add node, add connection, toggle
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| **Framework** | Flutter 3.44+ |
-| **Language** | Dart 3.12+ |
-| **Rendering** | CustomPainter (Canvas API) |
-| **State** | ChangeNotifier + ListenableBuilder |
-| **AI/ML** | Custom implementation (no external packages) |
-| **Charts** | CustomPainter (no charting packages) |
-| **Platform** | Android, iOS (desktop/web later) |
-
----
+| Framework | Flutter |
+| Language | Dart |
+| Rendering | CustomPainter |
+| State | ChangeNotifier + ListenableBuilder |
+| AI/ML | Custom (no external packages) |
+| Charts | CustomPainter |
 
 ## Getting Started
 
@@ -161,8 +105,6 @@ cd neuroevo_lab
 flutter pub get
 flutter run
 ```
-
----
 
 ## License
 

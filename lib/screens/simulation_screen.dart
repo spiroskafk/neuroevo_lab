@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import '../simulations/base/simulation.dart';
 import '../simulations/base/evolution_state.dart';
 import '../simulations/self_driving/car_simulation.dart';
+import '../simulations/flappy_bird/flappy_simulation.dart';
 import '../models/simulation_meta.dart';
 import '../core/neat/genome.dart';
 import '../core/neat/neuron.dart';
@@ -54,6 +55,8 @@ class _SimulationScreenState extends State<SimulationScreen>
     switch (widget.simulationId) {
       case 'self_driving':
         return CarSimulation();
+      case 'flappy_bird':
+        return FlappyBirdSimulation();
       default:
         return CarSimulation();
     }
