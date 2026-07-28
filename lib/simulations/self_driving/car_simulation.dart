@@ -103,6 +103,7 @@ class CarSimulation extends SimulationBase {
 
         car.update(dt, acceleration, steering);
         car.updateCheckpoint(track.centerPoints);
+        car.updateStagnation(dt);
 
         if (!track.isOnTrack(car.x, car.y)) {
           car.kill();

@@ -14,6 +14,7 @@ class Car {
   int checkpointIndex;
   double checkpointProgress;
   int totalLaps;
+  double stagnationTimer;
 
   Car({
     required this.id,
@@ -28,6 +29,7 @@ class Car {
     this.checkpointIndex = 0,
     this.checkpointProgress = 0,
     this.totalLaps = 0,
+    this.stagnationTimer = 0,
   });
 
   static const double maxSpeed = 200;
@@ -35,6 +37,7 @@ class Car {
   static const double brakeForce = 100;
   static const double friction = 0.95;
   static const double turnSpeed = 3;
+  static const double maxStagnationTime = 5;
 
   void update(double dt, double acceleration, double steering) {
     if (!alive) return;
@@ -62,6 +65,7 @@ class Car {
     if (dist < 30) {
       final prevIdx = checkpointIndex;
       checkpointIndex = nextIdx;
+      stagnationTimer = 0;
       if (checkpointIndex == 0 && prevIdx == checkpoints.length - 1) {
         totalLaps++;
       }
@@ -69,6 +73,14 @@ class Car {
 
     final curr = checkpoints[checkpointIndex];
     checkpointProgress = 1 - (sqrt(pow(curr.dx - x, 2) + pow(curr.dy - y, 2)) / 300).clamp(0, 1);
+  }
+
+  void updateStagnation(double dt) {
+    if (!alive) return;
+    stagnationTimer += dt;
+    if (stagnationTimer > maxStagnationTime) {
+      kill();
+    }
   }
 
   void kill() {
@@ -86,6 +98,7 @@ class Car {
     checkpointIndex = 0;
     checkpointProgress = 0;
     totalLaps = 0;
+    stagnationTimer = 0;
   }
 
   double computeFitness() {
