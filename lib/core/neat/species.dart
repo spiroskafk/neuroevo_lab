@@ -30,7 +30,8 @@ class Species {
     final allInnovations = g1Innovations.union(g2Innovations);
     final maxG1 = g1Innovations.isEmpty ? 0 : g1Innovations.reduce((a, b) => a > b ? a : b);
     final maxG2 = g2Innovations.isEmpty ? 0 : g2Innovations.reduce((a, b) => a > b ? a : b);
-    final n = max(allInnovations.length, 1);
+    final largerSize = max(g1.connections.length, g2.connections.length);
+    final n = largerSize < 20 ? 1 : largerSize;
 
     for (final innov in allInnovations) {
       final inG1 = g1Innovations.contains(innov);
