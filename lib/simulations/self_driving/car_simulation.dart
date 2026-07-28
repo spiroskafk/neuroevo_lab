@@ -18,7 +18,8 @@ class CarSimulation extends SimulationBase {
           neatConfig: NEATConfig(
             numInputs: 7,
             numOutputs: 2,
-            populationSize: 50,
+            populationSize: 100,
+            maxStagnation: 25,
           ),
         );
 

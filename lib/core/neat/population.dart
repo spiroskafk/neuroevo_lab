@@ -241,6 +241,8 @@ class Population {
       return;
     }
 
+    final bestEver = genomes.reduce((a, b) => a.fitness > b.fitness ? a : b);
+
     for (final s in species) {
       if (s.genomes.isEmpty) continue;
 
@@ -278,6 +280,10 @@ class Population {
           newGenomes.add(child);
         }
       }
+    }
+
+    if (bestEver.fitness > 0) {
+      newGenomes.add(bestEver.copy());
     }
 
     while (newGenomes.length < config.populationSize) {
