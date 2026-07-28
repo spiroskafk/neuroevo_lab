@@ -37,7 +37,6 @@ class SimulationMeta {
           icon: Icons.auto_awesome,
           color: Color(0xFFFF9800),
           algorithm: 'NEAT',
-          status: SimulationStatus.locked,
         ),
         const SimulationMeta(
           id: 'smart_rockets',
