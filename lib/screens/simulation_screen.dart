@@ -4,10 +4,14 @@ import '../simulations/base/simulation.dart';
 import '../simulations/base/evolution_state.dart';
 import '../simulations/self_driving/car_simulation.dart';
 import '../models/simulation_meta.dart';
+import '../core/neat/genome.dart';
+import '../core/neat/neuron.dart';
 import '../widgets/simulation_canvas.dart';
 import '../widgets/controls_bar.dart';
 import '../widgets/info_overlay.dart';
 import '../widgets/fitness_graph.dart';
+import '../widgets/analysis_sheet.dart';
+import '../widgets/neural_network_painter.dart';
 
 class SimulationScreen extends StatefulWidget {
   final String simulationId;
@@ -27,6 +31,16 @@ class _SimulationScreenState extends State<SimulationScreen>
   static const double _fixedDt = 1 / 60;
 
   EvolutionState get _state => _simulation.state;
+
+  static final _emptyGenome = Genome(
+    id: -1,
+    neurons: [
+      Neuron(id: 0, type: NeuronType.bias),
+      Neuron(id: 1, type: NeuronType.input),
+      Neuron(id: 2, type: NeuronType.output),
+    ],
+    connections: [],
+  );
 
   @override
   void initState() {
@@ -64,6 +78,17 @@ class _SimulationScreenState extends State<SimulationScreen>
     }
 
     if (mounted) setState(() {});
+  }
+
+  void _showAnalysis(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1A1A2E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => AnalysisSheet(state: _state),
+    );
   }
 
   @override
@@ -111,11 +136,31 @@ class _SimulationScreenState extends State<SimulationScreen>
       ),
       body: Column(
         children: [
-          SimulationCanvas(simulation: _simulation),
+          Expanded(
+            child: Stack(
+              children: [
+                SimulationCanvas(simulation: _simulation),
+                if (_state.showNetwork)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: NeuralNetworkPainter(
+                          genome: _simulation.population?.bestGenome ??
+                              _emptyGenome,
+                        ),
+                        size: Size.infinite,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
           ControlsBar(
             state: _state,
             onToggleRunning: _simulation.toggleRunning,
             onReset: () => _simulation.reset(),
+            onShowAnalysis: () => _showAnalysis(context),
+            onToggleNetwork: _state.toggleNetwork,
             onSpeedChange: (speed) => _simulation.setSpeed(speed),
           ),
           Padding(

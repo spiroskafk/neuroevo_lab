@@ -72,6 +72,15 @@ class CarSimulation extends SimulationBase {
     }
     state.averageFitness = pop.averageFitness;
     state.speciesCount = pop.species.length;
+    state.speciesCountHistory.add(pop.species.length);
+    final best = pop.bestGenome;
+    state.neuronCountHistory.add(best.neurons.length);
+    state.connectionCountHistory.add(best.connections.length);
+    state.currentSpeciesDetails = pop.species.map((s) => {
+      'id': s.id,
+      'count': s.genomes.length,
+      'fitness': s.bestFitness,
+    }).toList();
     state.recordGeneration();
     _spawnCars();
   }
