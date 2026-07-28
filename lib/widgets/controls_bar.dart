@@ -5,6 +5,8 @@ class ControlsBar extends StatelessWidget {
   final EvolutionState state;
   final VoidCallback onToggleRunning;
   final VoidCallback onReset;
+  final VoidCallback? onShowAnalysis;
+  final VoidCallback? onToggleNetwork;
   final void Function(double) onSpeedChange;
 
   const ControlsBar({
@@ -12,6 +14,8 @@ class ControlsBar extends StatelessWidget {
     required this.state,
     required this.onToggleRunning,
     required this.onReset,
+    this.onShowAnalysis,
+    this.onToggleNetwork,
     required this.onSpeedChange,
   });
 
@@ -32,6 +36,19 @@ class ControlsBar extends StatelessWidget {
           const SizedBox(width: 8),
           ..._speedButtons(),
           const Spacer(),
+          IconButton(
+            icon: Icon(
+              Icons.hub,
+              color: state.showNetwork ? const Color(0xFF4CAF50) : Colors.white54,
+            ),
+            onPressed: onToggleNetwork,
+          ),
+          const SizedBox(width: 4),
+          IconButton(
+            icon: const Icon(Icons.analytics, color: Colors.white54),
+            onPressed: onShowAnalysis,
+          ),
+          const SizedBox(width: 4),
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: onReset,

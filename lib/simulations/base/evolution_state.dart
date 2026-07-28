@@ -15,6 +15,10 @@ class EvolutionState extends ChangeNotifier {
 
   final List<double> bestFitnessHistory = [];
   final List<double> averageFitnessHistory = [];
+  final List<int> speciesCountHistory = [];
+  final List<int> neuronCountHistory = [];
+  final List<int> connectionCountHistory = [];
+  List<Map<String, dynamic>> currentSpeciesDetails = const [];
 
   void reset() {
     generation = 0;
@@ -27,6 +31,10 @@ class EvolutionState extends ChangeNotifier {
     genTimeMs = 0;
     bestFitnessHistory.clear();
     averageFitnessHistory.clear();
+    speciesCountHistory.clear();
+    neuronCountHistory.clear();
+    connectionCountHistory.clear();
+    currentSpeciesDetails = const [];
     notifyListeners();
   }
 
@@ -43,6 +51,11 @@ class EvolutionState extends ChangeNotifier {
 
   void setSpeed(double speed) {
     speedMultiplier = speed;
+    notifyListeners();
+  }
+
+  void toggleNetwork() {
+    showNetwork = !showNetwork;
     notifyListeners();
   }
 }

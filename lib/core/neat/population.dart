@@ -103,36 +103,38 @@ class Population {
     }
 
     final connections = <Connection>[];
-    for (int i = 0; i < config.numInputs; i++) {
-      for (int j = 0; j < config.numOutputs; j++) {
-        final innov = _nextInnovation++;
+
+    void addConnection(int from, int to) {
+      final existing = _innovations.cast<Innovation?>().firstWhere(
+        (inv) => inv!.from == from && inv.to == to,
+        orElse: () => null,
+      );
+      final int innov;
+      if (existing != null) {
+        innov = existing.innovationId;
+      } else {
+        innov = _nextInnovation++;
         _innovations.add(Innovation(
           innovationId: innov,
-          from: i + 1,
-          to: numNeurons + j,
-        ));
-        connections.add(Connection(
-          innovation: innov,
-          from: i + 1,
-          to: numNeurons + j,
-          weight: _rng.nextDouble() * 2 - 1,
+          from: from,
+          to: to,
         ));
       }
-    }
-
-    for (int j = 0; j < config.numOutputs; j++) {
-      final innov = _nextInnovation++;
-      _innovations.add(Innovation(
-        innovationId: innov,
-        from: 0,
-        to: numNeurons + j,
-      ));
       connections.add(Connection(
         innovation: innov,
-        from: 0,
-        to: numNeurons + j,
+        from: from,
+        to: to,
         weight: _rng.nextDouble() * 2 - 1,
       ));
+    }
+
+    for (int i = 0; i < config.numInputs; i++) {
+      for (int j = 0; j < config.numOutputs; j++) {
+        addConnection(i + 1, numNeurons + j);
+      }
+    }
+    for (int j = 0; j < config.numOutputs; j++) {
+      addConnection(0, numNeurons + j);
     }
 
     return Genome(id: id, neurons: neurons, connections: connections);
