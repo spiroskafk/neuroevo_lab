@@ -6,6 +6,8 @@ class EvolutionState extends ChangeNotifier {
   int speciesCount = 0;
   int bestLaps = 0;
   int bestCheckpoint = 0;
+  String metricLabel = 'Laps';
+  int metricValue = 0;
   double bestFitness = 0;
   double averageFitness = 0;
   double genTimeMs = 0;
@@ -26,6 +28,8 @@ class EvolutionState extends ChangeNotifier {
     speciesCount = 0;
     bestLaps = 0;
     bestCheckpoint = 0;
+    metricLabel = 'Laps';
+    metricValue = 0;
     bestFitness = 0;
     averageFitness = 0;
     genTimeMs = 0;

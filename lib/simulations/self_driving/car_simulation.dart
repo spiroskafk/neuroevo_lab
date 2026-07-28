@@ -143,6 +143,8 @@ class CarSimulation extends SimulationBase {
       state.bestLaps = maxLaps;
       state.bestCheckpoint = maxCheckpoint;
     }
+    state.metricLabel = 'Laps';
+    state.metricValue = state.bestLaps;
   }
 
   List<double> _getInputs(Car car) {

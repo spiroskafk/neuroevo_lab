@@ -160,6 +160,8 @@ class FlappyBirdSimulation extends SimulationBase {
     if (maxFitness > state.bestFitness) {
       state.bestFitness = maxFitness;
     }
+    state.metricLabel = 'Score';
+    state.metricValue = state.bestFitness.toInt();
   }
 
   List<double> _getInputs(Bird bird) {
