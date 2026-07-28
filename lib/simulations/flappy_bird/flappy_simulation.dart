@@ -53,8 +53,18 @@ class FlappyBirdSimulation extends SimulationBase {
     }
   }
 
+  double get _curriculumGap {
+    final reduction = (state.bestFitness / 10000).floor() * 10;
+    return (200 - reduction).clamp(120, 200).toDouble();
+  }
+
   Pipe _createPipe(double x) {
-    return Pipe(x: x, screenHeight: _screenHeight, rng: _rng);
+    return Pipe(
+      x: x,
+      gapSize: _curriculumGap,
+      screenHeight: _screenHeight,
+      rng: _rng,
+    );
   }
 
   void _nextGeneration() {

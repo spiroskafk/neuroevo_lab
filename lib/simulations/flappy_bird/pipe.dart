@@ -10,16 +10,14 @@ class Pipe {
   bool scored = false;
 
   static const double speed = 200;
-  static const double gap = 150;
-
   static const double margin = 60;
 
   Pipe({
     required this.x,
+    required this.gapSize,
     required this.screenHeight,
     Random? rng,
-  })  : gapCenter = margin + gap / 2 + (rng ?? Random()).nextDouble() * (screenHeight - margin * 2 - gap),
-        gapSize = gap,
+  })  : gapCenter = margin + gapSize / 2 + (rng ?? Random()).nextDouble() * (screenHeight - margin * 2 - gapSize),
         width = 60;
 
   void update(double dt) {
