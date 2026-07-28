@@ -1,5 +1,5 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import '../simulations/base/simulation.dart';
 import '../simulations/base/evolution_state.dart';
 import '../simulations/self_driving/car_simulation.dart';
@@ -21,9 +21,10 @@ class SimulationScreen extends StatefulWidget {
 class _SimulationScreenState extends State<SimulationScreen>
     with SingleTickerProviderStateMixin {
   late SimulationBase _simulation;
-  Timer? _timer;
-  double _lastTime = 0;
-  bool _initialized = false;
+  Ticker? _ticker;
+  Duration _previousElapsed = Duration.zero;
+  double _accumulator = 0;
+  static const double _fixedDt = 1 / 60;
 
   EvolutionState get _state => _simulation.state;
 
@@ -45,31 +46,30 @@ class _SimulationScreenState extends State<SimulationScreen>
   }
 
   void _startLoop() {
-    const targetDt = 1 / 60;
-    _lastTime = DateTime.now().microsecondsSinceEpoch / 1000000;
-    _timer = Timer.periodic(
-      Duration(milliseconds: (targetDt * 1000).round()),
-      (_) {
-        final now = DateTime.now().microsecondsSinceEpoch / 1000000;
-        var dt = now - _lastTime;
-        _lastTime = now;
+    _previousElapsed = Duration.zero;
+    _ticker = createTicker(_onTick);
+    _ticker!.start();
+  }
 
-        dt *= _state.speedMultiplier;
-        dt = dt.clamp(0, 0.05);
+  void _onTick(Duration elapsed) {
+    final rawDt = (elapsed - _previousElapsed).inMicroseconds / 1000000;
+    _previousElapsed = elapsed;
 
-        _simulation.update(dt);
-        if (mounted) setState(() {});
-        if (!_initialized) {
-          _initialized = true;
-          _state.toggleRunning();
-        }
-      },
-    );
+    final dt = rawDt.clamp(0, 0.05);
+    _accumulator += dt * _state.speedMultiplier;
+
+    while (_accumulator >= _fixedDt) {
+      _simulation.update(_fixedDt);
+      _accumulator -= _fixedDt;
+    }
+
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _ticker?.stop();
+    _ticker?.dispose();
     _simulation.dispose();
     super.dispose();
   }
@@ -115,10 +115,7 @@ class _SimulationScreenState extends State<SimulationScreen>
           ControlsBar(
             state: _state,
             onToggleRunning: _simulation.toggleRunning,
-            onReset: () {
-              _simulation.reset();
-              _initialized = false;
-            },
+            onReset: () => _simulation.reset(),
             onSpeedChange: (speed) => _simulation.setSpeed(speed),
           ),
           Padding(

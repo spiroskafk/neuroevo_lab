@@ -7,9 +7,10 @@ import 'track.dart';
 import 'car_painter.dart';
 
 class CarSimulation extends SimulationBase {
-  late Track track;
+  Track? _track;
   final List<Car> cars = [];
   Population? _population;
+  bool _needsSpawn = false;
 
   CarSimulation()
       : super(
@@ -24,15 +25,19 @@ class CarSimulation extends SimulationBase {
   @override
   void init() {
     state.reset();
+    _track = null;
     cars.clear();
     _population = Population.initial(neatConfig, seed: 42);
+    _needsSpawn = true;
   }
 
   void _initTrack(Size size) {
-    track = Track.create(size, trackWidth: 40);
+    _track = Track.create(size, trackWidth: 40);
   }
 
   void _spawnCars() {
+    final track = _track;
+    if (track == null) return;
     cars.clear();
     final pop = _population!;
     for (int i = 0; i < pop.genomes.length; i++) {
@@ -44,26 +49,42 @@ class CarSimulation extends SimulationBase {
       );
       cars.add(car);
     }
+    _needsSpawn = false;
+  }
+
+  void _nextGeneration() {
+    final pop = _population!;
+
+    for (int i = 0; i < cars.length && i < pop.genomes.length; i++) {
+      pop.genomes[i].fitness = cars[i].computeFitness();
+    }
+
+    pop.evolve();
+    state.generation = pop.generation;
+    state.bestFitness = pop.bestFitness;
+    state.averageFitness = pop.averageFitness;
+    state.recordGeneration();
+    _spawnCars();
   }
 
   @override
   void update(double dt) {
+    final track = _track;
+    if (track == null) return;
     if (!state.isRunning) return;
     if (_population == null) return;
 
-    if (cars.isEmpty || cars.every((c) => !c.alive)) {
-      _population!.evolve();
-      state.generation = _population!.generation;
-      state.bestFitness = _population!.bestFitness;
-      state.averageFitness = _population!.averageFitness;
-      state.recordGeneration();
+    if (_needsSpawn) {
       _spawnCars();
+    }
+
+    if (cars.isEmpty || cars.every((c) => !c.alive)) {
+      _nextGeneration();
       return;
     }
 
     final pop = _population!;
     state.aliveCount = cars.where((c) => c.alive).length;
-    final bestGenome = pop.bestGenome;
 
     for (int i = 0; i < cars.length; i++) {
       final car = cars[i];
@@ -78,23 +99,28 @@ class CarSimulation extends SimulationBase {
         final steering = outputs[1].clamp(-1, 1).toDouble();
 
         car.update(dt, acceleration, steering);
+        car.updateCheckpoint(track.centerPoints);
 
         if (!track.isOnTrack(car.x, car.y)) {
           car.kill();
         }
-
-        genome.fitness = car.distanceTraveled;
       }
     }
 
-    if (bestGenome.fitness > state.bestFitness) {
-      state.bestFitness = bestGenome.fitness;
+    double maxFitness = 0;
+    for (int i = 0; i < cars.length && i < pop.genomes.length; i++) {
+      final f = cars[i].computeFitness();
+      if (f > maxFitness) maxFitness = f;
+    }
+    if (maxFitness > state.bestFitness) {
+      state.bestFitness = maxFitness;
     }
   }
 
   List<double> _getInputs(Car car) {
+    final track = _track!;
     final sensors = car.getSensorDistances(track.segments);
-    final normalizedSensors = sensors.map((s) => s / 300.0).toList();
+    final normalizedSensors = sensors.map((s) => (s / 300.0).clamp(0, 1).toDouble()).toList();
     final speed = (car.speed / Car.maxSpeed).clamp(-1, 1).toDouble();
     return [
       ...normalizedSensors,
@@ -104,7 +130,8 @@ class CarSimulation extends SimulationBase {
 
   @override
   void render(Canvas canvas, Size size) {
-    if (track.bounds.isEmpty) _initTrack(size);
+    if (_track == null) _initTrack(size);
+    final track = _track!;
 
     CarPainter.drawTrack(canvas, track);
 
@@ -125,12 +152,12 @@ class CarSimulation extends SimulationBase {
   void dispose() {
     _population = null;
     cars.clear();
+    _track = null;
   }
 
   @override
   void reset() {
     init();
-    state.reset();
   }
 
   @override

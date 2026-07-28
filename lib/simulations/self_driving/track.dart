@@ -5,6 +5,7 @@ import '../../utils/math_utils.dart';
 class Track {
   final List<Offset> innerPoints;
   final List<Offset> outerPoints;
+  final List<Offset> centerPoints;
   final List<List<Offset>> segments;
   final double trackWidth;
   final Offset startPoint;
@@ -14,6 +15,7 @@ class Track {
   Track._({
     required this.innerPoints,
     required this.outerPoints,
+    required this.centerPoints,
     required this.segments,
     required this.trackWidth,
     required this.startPoint,
@@ -83,6 +85,7 @@ class Track {
     return Track._(
       innerPoints: inner,
       outerPoints: outer,
+      centerPoints: points,
       segments: segs,
       trackWidth: trackWidth,
       startPoint: points[0],
