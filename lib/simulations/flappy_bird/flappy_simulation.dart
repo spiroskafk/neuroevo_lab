@@ -20,8 +20,8 @@ class FlappyBirdSimulation extends SimulationBase {
       : super(
           config: const SimulationConfig(),
           neatConfig: NEATConfig(
-            numInputs: 3,
-            numOutputs: 1,
+          numInputs: 4,
+          numOutputs: 1,
             populationSize: 100,
             maxStagnation: 25,
             compatibilityThreshold: 1.5,
@@ -130,6 +130,17 @@ class FlappyBirdSimulation extends SimulationBase {
 
       bird.fitness++;
 
+      final nextPipe = pipes.where((p) => p.x + p.width > bird.x).firstOrNull;
+
+      if (nextPipe != null) {
+        final dist = (nextPipe.x - bird.x).abs();
+        if (dist < 300) {
+          final verticalDist = (nextPipe.gapCenter - bird.y).abs();
+          final alignment = (1 - verticalDist / (nextPipe.gapSize / 2)).clamp(0.0, 1.0);
+          bird.fitness += (alignment * 60).round();
+        }
+      }
+
       for (final pipe in pipes) {
         if (!pipe.scored && pipe.x + pipe.width < bird.x) {
           bird.fitness += 50;
@@ -158,8 +169,9 @@ class FlappyBirdSimulation extends SimulationBase {
 
     return [
       bird.y / _screenHeight,
-      (gapCenter - bird.y) / _screenHeight,
+      (gapCenter - bird.y) / (_screenHeight / 2),
       (pipeX - bird.x) / 600,
+      bird.velocity / 500,
     ];
   }
 
