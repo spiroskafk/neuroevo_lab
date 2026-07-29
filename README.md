@@ -17,7 +17,7 @@ Built with **Flutter**. Zero external AI/ML dependencies — all algorithms hand
 | Weight | CartPole | NEAT | Planned |
 | Soccer | Soccer | Multi-agent NEAT | Planned |
 | Mountain | Mountain Car | Q-Learning | Planned |
-| Predator/Prey | Predator vs Prey | Multi-agent | Planned |
+| Predator/Prey | Predator vs Prey | Multi-population NEAT | Building |
 
 ## Simulation Screen
 

@@ -147,6 +147,7 @@ class CarSimulation extends SimulationBase {
     }
     state.metricLabel = 'Laps';
     state.metricValue = state.bestLaps;
+    state.targetLabel = '1 lap';
   }
 
   List<double> _getInputs(Car car) {

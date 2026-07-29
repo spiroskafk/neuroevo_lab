@@ -40,8 +40,8 @@ class FlappyBirdSimulation extends SimulationBase {
     pipes.clear();
     _maxFitness = 0;
     _population = Population.initial(neatConfig, seed: 42);
-    _rng = Random(42);
-    _nextPipeX = 400;
+    _rng = Random();
+    _nextPipeX = 300;
     _spawnBirds();
   }
 
@@ -95,7 +95,7 @@ class FlappyBirdSimulation extends SimulationBase {
     state.recordGeneration();
     _spawnBirds();
     pipes.clear();
-    _nextPipeX = 400;
+    _nextPipeX = 300;
   }
 
   @override
@@ -134,9 +134,9 @@ class FlappyBirdSimulation extends SimulationBase {
     pipes.removeWhere((p) => p.isOffScreen);
 
     _nextPipeX -= Pipe.speed * dt;
-    if (_nextPipeX <= 200) {
-      pipes.add(_createPipe(state.generation == 0 ? 400 : 600));
-      _nextPipeX = 400;
+    if (_nextPipeX <= 0) {
+      pipes.add(_createPipe(800));
+      _nextPipeX = 300;
     }
 
     for (final bird in birds) {

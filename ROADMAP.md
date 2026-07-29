@@ -51,11 +51,11 @@
 - [x] Species diversity fix (innovation sharing)
 
 ### Simulation 2: Flappy Bird AI
-- [/] `bird.dart` — Bird physics (gravity, flap, collision)
-- [/] `pipe.dart` — Pipe obstacles generation
-- [/] `flappy_painter.dart` — Canvas rendering
-- [/] `flappy_simulation.dart` — NEAT inputs (bird y, pipe gap, pipe x) → flap
-- [ ] Controls + info + graph integration
+- [x] `bird.dart` — Bird physics (gravity, flap, collision)
+- [x] `pipe.dart` — Pipe obstacles generation
+- [x] `flappy_painter.dart` — Canvas rendering
+- [x] `flappy_simulation.dart` — NEAT inputs (bird y, pipe gap, pipe x) → flap
+- [x] Controls + info + graph integration
 
 ### Simulation 3: Smart Rockets
 - [ ] `rocket.dart` — Rocket physics
@@ -101,8 +101,11 @@
 - [ ] Continuous state/action space visualization
 
 ### Simulation 8: Predator vs Prey
-- [ ] Multi-agent pursuit-evasion
-- [ ] Swarm behavior
+- [x] `creature.dart` — Creature base class (position, energy, movement)
+- [x] `world.dart` — Arena, food spawning, collision detection
+- [x] `predator_prey_painter.dart` — Canvas rendering
+- [x] `predator_prey_simulation.dart` — Coevolution (2 NEAT populations)
+- [ ] Bells & whistles (optional)
 
 ### Simulation 9: Creature Walker
 - [ ] 2D physics (joints, bones, muscles)

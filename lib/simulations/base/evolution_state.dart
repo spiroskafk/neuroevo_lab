@@ -8,6 +8,7 @@ class EvolutionState extends ChangeNotifier {
   int bestCheckpoint = 0;
   String metricLabel = 'Laps';
   int metricValue = 0;
+  String? targetLabel;
   double bestFitness = 0;
   double averageFitness = 0;
   double genTimeMs = 0;
