@@ -54,8 +54,7 @@ class FlappyBirdSimulation extends SimulationBase {
   }
 
   double get _curriculumGap {
-    final reduction = (state.bestFitness / 10000).floor() * 10;
-    return (200 - reduction).clamp(120, 200).toDouble();
+    return (200 - state.generation * 0.8).clamp(120, 200).toDouble();
   }
 
   Pipe _createPipe(double x) {
