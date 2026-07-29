@@ -21,7 +21,7 @@ class InfoOverlay extends StatelessWidget {
           const SizedBox(width: 10),
           _chip('Alive', '${state.aliveCount}'),
           const SizedBox(width: 10),
-          _chip('Laps', '${state.bestLaps}'),
+          _chip(state.metricLabel, '${state.metricValue}'),
           const SizedBox(width: 10),
           _chip('Species', '${state.speciesCount}'),
         ],

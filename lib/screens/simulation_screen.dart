@@ -4,6 +4,7 @@ import '../simulations/base/simulation.dart';
 import '../simulations/base/evolution_state.dart';
 import '../simulations/self_driving/car_simulation.dart';
 import '../simulations/flappy_bird/flappy_simulation.dart';
+import '../simulations/predator_prey/predator_prey_simulation.dart';
 import '../models/simulation_meta.dart';
 import '../core/neat/genome.dart';
 import '../core/neat/neuron.dart';
@@ -57,6 +58,8 @@ class _SimulationScreenState extends State<SimulationScreen>
         return CarSimulation();
       case 'flappy_bird':
         return FlappyBirdSimulation();
+      case 'predator_prey':
+        return PredatorPreySimulation();
       default:
         return CarSimulation();
     }

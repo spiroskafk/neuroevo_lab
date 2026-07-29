@@ -16,16 +16,21 @@ class FlappyBirdSimulation extends SimulationBase {
   double _screenHeight = 800;
   int _maxFitness = 0;
 
+  static NEATConfig get defaultConfig => NEATConfig(
+    numInputs: 4,
+    numOutputs: 1,
+    populationSize: 100,
+    maxStagnation: 25,
+    compatibilityThreshold: 1.0,
+    mutateAddNodeRate: 0.1,
+    mutateAddConnectionRate: 0.15,
+    mutateWeightsPower: 0.8,
+  );
+
   FlappyBirdSimulation()
       : super(
           config: const SimulationConfig(),
-          neatConfig: NEATConfig(
-            numInputs: 3,
-            numOutputs: 1,
-            populationSize: 100,
-            maxStagnation: 25,
-            compatibilityThreshold: 1.5,
-          ),
+          neatConfig: defaultConfig,
         );
 
   @override
@@ -35,8 +40,8 @@ class FlappyBirdSimulation extends SimulationBase {
     pipes.clear();
     _maxFitness = 0;
     _population = Population.initial(neatConfig, seed: 42);
-    _rng = Random(42);
-    _nextPipeX = 400;
+    _rng = Random();
+    _nextPipeX = 300;
     _spawnBirds();
   }
 
@@ -48,8 +53,17 @@ class FlappyBirdSimulation extends SimulationBase {
     }
   }
 
+  double get _curriculumGap {
+    return (200 - state.generation * 0.8).clamp(120, 200).toDouble();
+  }
+
   Pipe _createPipe(double x) {
-    return Pipe(x: x, screenHeight: _screenHeight, rng: _rng);
+    return Pipe(
+      x: x,
+      gapSize: _curriculumGap,
+      screenHeight: _screenHeight,
+      rng: _rng,
+    );
   }
 
   void _nextGeneration() {
@@ -81,7 +95,7 @@ class FlappyBirdSimulation extends SimulationBase {
     state.recordGeneration();
     _spawnBirds();
     pipes.clear();
-    _nextPipeX = 400;
+    _nextPipeX = 300;
   }
 
   @override
@@ -120,15 +134,26 @@ class FlappyBirdSimulation extends SimulationBase {
     pipes.removeWhere((p) => p.isOffScreen);
 
     _nextPipeX -= Pipe.speed * dt;
-    if (_nextPipeX <= 200) {
-      pipes.add(_createPipe(state.generation == 0 ? 400 : 600));
-      _nextPipeX = 400;
+    if (_nextPipeX <= 0) {
+      pipes.add(_createPipe(800));
+      _nextPipeX = 300;
     }
 
     for (final bird in birds) {
       if (!bird.alive) continue;
 
       bird.fitness++;
+
+      final nextPipe = pipes.where((p) => p.x + p.width > bird.x).firstOrNull;
+
+      if (nextPipe != null) {
+        final dist = (nextPipe.x - bird.x).abs();
+        if (dist < 300) {
+          final verticalDist = (nextPipe.gapCenter - bird.y).abs();
+          final alignment = (1 - verticalDist / (nextPipe.gapSize / 2)).clamp(0.0, 1.0);
+          bird.fitness += (alignment * 60).round();
+        }
+      }
 
       for (final pipe in pipes) {
         if (!pipe.scored && pipe.x + pipe.width < bird.x) {
@@ -149,6 +174,8 @@ class FlappyBirdSimulation extends SimulationBase {
     if (maxFitness > state.bestFitness) {
       state.bestFitness = maxFitness;
     }
+    state.metricLabel = 'Score';
+    state.metricValue = state.bestFitness.toInt();
   }
 
   List<double> _getInputs(Bird bird) {
@@ -158,8 +185,9 @@ class FlappyBirdSimulation extends SimulationBase {
 
     return [
       bird.y / _screenHeight,
-      (gapCenter - bird.y) / _screenHeight,
+      (gapCenter - bird.y) / (_screenHeight / 2),
       (pipeX - bird.x) / 600,
+      bird.velocity / 500,
     ];
   }
 

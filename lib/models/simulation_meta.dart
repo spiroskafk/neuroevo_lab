@@ -66,6 +66,14 @@ class SimulationMeta {
           status: SimulationStatus.locked,
         ),
         const SimulationMeta(
+          id: 'predator_prey',
+          title: 'Predator vs Prey',
+          description: 'Coevolution — predators hunt as prey learn to evade and forage',
+          icon: Icons.pets,
+          color: Color(0xFFFF5722),
+          algorithm: 'Multi-population NEAT',
+        ),
+        const SimulationMeta(
           id: 'soccer',
           title: 'Soccer',
           description: 'Multi-agent teams learn to play soccer together',

@@ -52,6 +52,8 @@ class _FitnessGraphPainter extends CustomPainter {
   }
 
   void _drawTargetLine(Canvas canvas, Size size, double maxVal) {
+    final label = state.targetLabel;
+    if (label == null) return;
     const target = 1000.0;
     if (maxVal < target) {
       final y = size.height - (target / maxVal * size.height);
@@ -64,7 +66,7 @@ class _FitnessGraphPainter extends CustomPainter {
 
         final tp = TextPainter(
           text: TextSpan(
-            text: '1 lap',
+            text: label,
             style: TextStyle(color: Colors.amber.withValues(alpha: 0.5), fontSize: 9),
           ),
           textDirection: TextDirection.ltr,
